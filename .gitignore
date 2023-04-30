@@ -3,4 +3,4 @@ lib/
 node_modules
 *.js
 generated
-!src/api/generated
+src/api/generated
