@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`materializeFnames2FilesAndFolders should correctly materialize files and folders 1`] = `
+Map {
+  "/tmp/dendron/bar/alpha/index.md" => "---
+id: bar-alpha-id
+---
+bar.alpha
+",
+  "/tmp/dendron/bar/alpha/one.md" => "---
+id: bar-alpha-one-id
+---
+bar.alpha.one
+",
+  "/tmp/dendron/bar/index.md" => "---
+id: bar-id
+---
+bar
+",
+  "/tmp/dendron/bar/two.md" => "---
+id: bar-two-id
+---
+bar.two
+",
+  "/tmp/dendron/foo/two/three.md" => "---
+id: foo-two-three-id
+---
+foo.two.three
+",
+}
+`;

@@ -3,8 +3,6 @@ import matter from 'gray-matter';
 import minimatch from 'minimatch';
 import { SyncToRequest } from "../../api/generated/api";
 import { MarkdownDestination } from "./markdownDestination";
-// import { SyncToRequest } from "../../api/generated/serialization/resources/dendron/types/SyncToRequest";
-
 
 export class SyncToService {
 
@@ -72,7 +70,7 @@ export class SyncToService {
     switch (args.targetFormat) {
       case 'markdown':
         const dest = new MarkdownDestination()
-        dest.sync(files, args.dest)
+        await dest.sync(files, args)
         break;
       default:
         throw new Error(`Error: "${args.targetFormat}" is not a supported exclude parameter.`);
