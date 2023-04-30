@@ -1,3 +1,6 @@
+import fs from "fs-extra";
+import path from "path";
+
 export type FileType = "file" | "index";
 
 export function determineFileTypes(filenames: string[]): Map<string, FileType> {
@@ -23,4 +26,26 @@ export function determineFileTypes(filenames: string[]): Map<string, FileType> {
   }
 
   return fileTypes;
+}
+
+export function dot2dirPath(filenames: string[]): string[] {
+  const dirPaths: string[] = [];
+  const fileTypeMapping = determineFileTypes(filenames);
+  for (const [filename, fileType] of fileTypeMapping) {
+    const _path = filename.replace(/\./g, '/');
+    if (fileType === "file") {
+      dirPaths.push(_path + ".md")
+    } else {
+      dirPaths.push(_path + "/index.md")
+    }
+  }
+  return dirPaths;
+}
+
+export async function materializePaths(filenames: string[]) {
+  // create all folders
+  await Promise.all(filenames.map(fpath => {
+    return fs.ensureDir(path.dirname(fpath))
+  }));
+  // create all files
 }

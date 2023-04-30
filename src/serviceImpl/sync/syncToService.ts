@@ -72,6 +72,7 @@ export class SyncToService {
     switch (args.targetFormat) {
       case 'markdown':
         const dest = new MarkdownDestination()
+        dest.sync(files, args.dest)
         break;
       default:
         throw new Error(`Error: "${args.targetFormat}" is not a supported exclude parameter.`);
