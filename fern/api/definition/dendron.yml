@@ -2,20 +2,26 @@
 
 service:
   auth: false
-  base-path: /markdown
+  base-path: ""
 
   endpoints:
     markdownRender:
-      path: ""
+      path: "/markdown"
       method: POST
       display-name: Render a Markdown document
-      request: RenderMarkdownResponse
+      request: RenderMarkdownRequest
       response: RenderMarkdownResponse
+    syncTo:
+      path: "/sync/to"
+      method: POST
+      display-name: Sync data to a target format
+      request: SyncToRequest
+      response: SyncToResponse
 
 types:
   RenderMarkdownRequest:
     properties:
-      text:
+      content:
         docs: The Markdown text to render in HTML.
         type: string
       mode:
@@ -28,6 +34,7 @@ types:
           will change the text `#42` into an HTML link to issue 42 in the
           `octo-org/octo-repo` repository.
         type: optional<string>
+
   RenderMarkdownResponse:
     properties:
       content: string
@@ -37,3 +44,15 @@ types:
     enum:
       - markdown
       - gfm
+
+  SyncToRequest:
+    properties:
+      src: string
+      dest: string
+      targetFormat: string
+      include: string
+      exclude: string
+
+  SyncToResponse:
+    properties:
+      numSynced: integer
