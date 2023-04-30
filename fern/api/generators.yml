@@ -7,3 +7,8 @@ groups:
         output:
           location: local-file-system
           path: ../../src/api/generated
+      - name: fernapi/fern-postman
+        version: 0.0.32
+        output:
+          location: local-file-system
+          path: ../../generated/postman

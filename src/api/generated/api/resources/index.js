@@ -26,7 +26,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.imdb = void 0;
+exports.imdb = exports.dendron = void 0;
+exports.dendron = __importStar(require("./dendron"));
+__exportStar(require("./dendron/types"), exports);
 exports.imdb = __importStar(require("./imdb"));
 __exportStar(require("./imdb/types"), exports);
 __exportStar(require("./imdb/errors"), exports);

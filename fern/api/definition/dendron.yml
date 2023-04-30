@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fern-api/fern/main/fern.schema.json
+
+service:
+  auth: false
+  base-path: /markdown
+
+  endpoints:
+    markdownRender:
+      path: ""
+      method: POST
+      display-name: Render a Markdown document
+      request: RenderMarkdownResponse
+      response: RenderMarkdownResponse
+
+types:
+  RenderMarkdownRequest:
+    properties:
+      text:
+        docs: The Markdown text to render in HTML.
+        type: string
+      mode:
+        docs: The rendering mode.
+        type: optional<RenderMarkdownMode>
+      context:
+        docs: >-
+          The repository context to use when creating references in `gfm`
+          mode.  For example, setting `context` to `octo-org/octo-repo`
+          will change the text `#42` into an HTML link to issue 42 in the
+          `octo-org/octo-repo` repository.
+        type: optional<string>
+  RenderMarkdownResponse:
+    properties:
+      content: string
+
+  RenderMarkdownMode:
+    docs: The rendering mode.
+    enum:
+      - markdown
+      - gfm
