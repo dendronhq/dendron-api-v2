@@ -1,3 +1,11 @@
 name: api
+environments:
+  Local:
+    docs: Local testing
+    url: http://localhost:8080
+  Production:
+    docs: Prod env
+    url: http://TODO
+default-environment: Production
 error-discrimination:
   strategy: status-code
