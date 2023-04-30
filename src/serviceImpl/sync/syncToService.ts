@@ -68,7 +68,7 @@ export class SyncToService {
 
     console.log('Matching files:');
     console.log(files.map(file => file.fname).join('\n'));
-
+    files[0].content
     switch (args.targetFormat) {
       case 'markdown':
         const dest = new MarkdownDestination()

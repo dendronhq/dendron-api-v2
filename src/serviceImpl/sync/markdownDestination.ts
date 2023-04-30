@@ -1,4 +1,6 @@
+import { SyncToRequest } from "../../api/generated/api";
+
 export class MarkdownDestination {
-  sync() {
+  sync(args: SyncToRequest) {
   }
 }
