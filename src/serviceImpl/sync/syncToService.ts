@@ -3,11 +3,70 @@ import matter from 'gray-matter';
 import minimatch from 'minimatch';
 import { SyncToRequest } from "../../api/generated/api";
 import { MarkdownDestination } from "./markdownDestination";
+import * as z from 'zod';
+import _ from "lodash"
+import { logger } from "../../logger";
+
+
+type IncludeOption = {
+  hierarchies: string[]
+}
+
+type ExcludeOption = {
+  tags: { key: string, value: any }[]
+}
+
+
+const processIncludeOption = (value: string): IncludeOption => {
+  const out = value.split(',').reduce((acc: Partial<IncludeOption>, param: string) => {
+    const [key, value] = param.split('=');
+    let cvalue: any = value;
+    switch (key) {
+      case 'hierarchies':
+        cvalue = value.split("|");
+        acc[key] = cvalue;
+        break;
+      default:
+        throw new Error(`Invalid key "${key}"`);
+    }
+    return acc;
+
+  }, {});
+  return _.defaults(out, { hierarchies: ["*"] });
+}
+
+const processExcludeOption = (value: string): ExcludeOption => {
+  const out = value.split(',').reduce((acc: Partial<ExcludeOption>, param: string) => {
+    const [key, value] = param.split('=');
+    let cvalue: any = value;
+    switch (key) {
+      case 'tags':
+        const [tagKey, tagValue] = value.split(':');
+        cvalue = [{ key, value }]
+        break;
+      default:
+        throw new Error(`Invalid key "${key}"`);
+    }
+    return acc;
+  }, {});
+  return _.defaults(out, { tags: [] });
+}
+
+const optionsSchema = z.object({
+  include: z.string().transform(processIncludeOption),
+  exclude: z.string().transform(processExcludeOption),
+  targetFormat: z.string(),
+  src: z.string(),
+  dest: z.string(),
+});
+
 
 export class SyncToService {
 
   async execute(args: SyncToRequest) {
-    console.log(`Syncing: ${args.src}`);
+    const ctx = "SyncToService";
+    const _args = optionsSchema.parse(args);
+    logger.info({ ctx, msg: "enter", args: _args });
 
     // Read all files with frontmatter using the "gray-matter" library
     let files = fs.readdirSync(args.src)
@@ -17,61 +76,27 @@ export class SyncToService {
         const fname = file.replace(/\.md$/, '');
         return { ...matter(contents), fname, fpath: `${args.src}/${file}` };
       });
+    logger.info({ ctx, msg: "fin:readFiles", numFiles: files.length });
 
+    // include
+    const hierarchies = _args.include.hierarchies;
+    let filesToSync = hierarchies.flatMap(hierarchyMatchPattern => {
+      return files.filter(file => minimatch(file.fname, hierarchyMatchPattern));
+    }) as unknown as (typeof files)
+    logger.info({ ctx, msg: "fin:filterHierarchies", numFiles: filesToSync.length });
 
-    // Parse the "include" option using AWS Structured Parameters shorthand syntax
-    let includeParams: Record<string, string> = {};
-    if (args.include) {
-      includeParams = args.include.split(',').reduce((acc: Record<string, string>, param: string) => {
-        const [key, value] = param.split('=');
-        acc[key.toLowerCase()] = value;
-        return acc;
-      }, {});
-    }
-
-    // Parse the "exclude" option using AWS Structured Parameters shorthand syntax
-    let excludeParams: Record<string, string> = {};
-    if (args.exclude) {
-      excludeParams = args.exclude.split(',').reduce((acc: Record<string, string>, param: string) => {
-        const [key, value] = param.split('=');
-        acc[key.toLowerCase()] = value;
-        return acc;
-      }, {});
-    }
-
-    console.log({ includeParams, excludeParams });
-
-    for (const [key, value] of Object.entries(includeParams)) {
-      switch (key) {
-        case 'hierarchy':
-          files = files.filter(file => minimatch(file.fname, value));
-          break;
-        default:
-          throw new Error(`Error: "${key}" is not a supported include parameter.`);
-      }
-    }
-
-    for (const [key, value] of Object.entries(excludeParams)) {
-      switch (key) {
-        case 'tags': {
-          const [tagKey, tagValue] = value.split(':');
-          files = files.filter(file => file.data[tagKey] !== tagValue);
-          break;
-        }
-        default:
-          throw new Error(`Error: "${key}" is not a supported exclude parameter.`);
-          break;
-      }
-    }
+    // exclude
+    _args.exclude.tags.forEach(tag => {
+      filesToSync = filesToSync.filter(file => file.data[tag.key] !== tag.value);
+    });
+    logger.info({ ctx, msg: "fin:excludeTags", numFiles: filesToSync.length });
 
     console.log('Matching files:');
-    console.log(files.map(file => file.fname).join('\n'));
-    files[0].content
+    console.log(filesToSync.map(file => file.fname).join('\n'));
     switch (args.targetFormat) {
       case 'markdown':
         const dest = new MarkdownDestination()
-        await dest.sync(files, args)
-        break;
+        return dest.sync(filesToSync, args)
       default:
         throw new Error(`Error: "${args.targetFormat}" is not a supported exclude parameter.`);
     }

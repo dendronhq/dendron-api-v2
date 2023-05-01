@@ -15,6 +15,6 @@ export default new DendronService({
   async syncTo(req, res) {
     const service = new SyncToService()
     const resp = await service.execute(req.body)
-    return res.send({ numSynced: 1 });
+    return res.send(resp);
   }
 });

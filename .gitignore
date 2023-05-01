@@ -4,3 +4,4 @@ node_modules
 *.js
 generated
 src/api/generated
+logs
