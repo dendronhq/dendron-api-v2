@@ -42,7 +42,8 @@ const processExcludeOption = (value: string): ExcludeOption => {
     switch (key) {
       case 'tags':
         const [tagKey, tagValue] = value.split(':');
-        cvalue = [{ key, value }]
+        cvalue = [{ key: tagKey, tagValue }]
+        acc[key] = cvalue;
         break;
       default:
         throw new Error(`Invalid key "${key}"`);
@@ -86,9 +87,11 @@ export class SyncToService {
     logger.info({ ctx, msg: "fin:filterHierarchies", numFiles: filesToSync.length });
 
     // exclude
-    _args.exclude.tags.forEach(tag => {
-      filesToSync = filesToSync.filter(file => file.data[tag.key] !== tag.value);
-    });
+    // _args.exclude.tags.forEach(tag => {
+    //   filesToSync = filesToSync.filter(file => file.data[tag.key] !== tag.value);
+    // });
+    // awlays exclude `public: false`
+    // filesToSync = filesToSync.filter(file => (!('public' in file.data) || file.data['public']));
     logger.info({ ctx, msg: "fin:excludeTags", numFiles: filesToSync.length });
 
     console.log('Matching files:');

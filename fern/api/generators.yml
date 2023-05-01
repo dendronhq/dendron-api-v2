@@ -17,3 +17,8 @@ groups:
         output:
           location: local-file-system
           path: ../../generated/postman
+      - name: fernapi/fern-python-sdk
+        version: 0.3.3
+        output:
+          location: local-file-system
+          path: /Users/kevinlin/code/til/dendron_sdk

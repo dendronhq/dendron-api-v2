@@ -2,6 +2,7 @@
   "name": "fern-express-starter",
   "scripts": {
     "build": "tsc",
+    "build:api": "fern build",
     "start": "node lib/server.js",
     "dev": "nodemon src/server.ts",
     "format": "prettier --write src/**",
