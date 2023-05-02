@@ -14,6 +14,7 @@ type IncludeOption = {
 
 type ExcludeOption = {
   tags: { key: string, value: any }[]
+  hierarchies: string[]
 }
 
 
@@ -45,12 +46,16 @@ const processExcludeOption = (value: string): ExcludeOption => {
         cvalue = [{ key: tagKey, tagValue }]
         acc[key] = cvalue;
         break;
+      case 'hierarchies':
+        cvalue = value.split("|");
+        acc[key] = cvalue;
+        break;
       default:
         throw new Error(`Invalid key "${key}"`);
     }
     return acc;
   }, {});
-  return _.defaults(out, { tags: [] });
+  return _.defaults(out, { tags: [], hierarchies: [] });
 }
 
 const optionsSchema = z.object({
@@ -80,6 +85,12 @@ export class SyncToService {
       });
     logger.info({ ctx, msg: "fin:readFiles", numFiles: files.length });
 
+    // const matchOnHierarchy = (opts: {hierarchies: string[], files: (typeof files)}) => {
+    //   let filesToSync = opts.hierarchies.flatMap(hierarchyMatchPattern => {
+    //     return opts.files.filter(file => minimatch(file.fname, hierarchyMatchPattern));
+    //   }) as unknown as (typeof files)
+    // }
+
     // include
     const hierarchies = _args.include.hierarchies;
     let filesToSync = hierarchies.flatMap(hierarchyMatchPattern => {
@@ -88,6 +99,9 @@ export class SyncToService {
     logger.info({ ctx, msg: "fin:filterHierarchies", numFiles: filesToSync.length });
 
     // exclude
+    filesToSync = _args.exclude.hierarchies.flatMap(hierarchyMatchPattern => {
+      return filesToSync.filter(file => !minimatch(file.fname, hierarchyMatchPattern));
+    }) as unknown as (typeof files)
     // _args.exclude.tags.forEach(tag => {
     //   filesToSync = filesToSync.filter(file => file.data[tag.key] !== tag.value);
     // });
@@ -95,8 +109,7 @@ export class SyncToService {
     // filesToSync = filesToSync.filter(file => (!('public' in file.data) || file.data['public']));
     logger.info({ ctx, msg: "fin:excludeTags", numFiles: filesToSync.length });
 
-    console.log('Matching files:');
-    console.log(filesToSync.map(file => file.fname).join('\n'));
+    logger.info({ctx, matches: filesToSync.map(file => file.fname).join('\n')});
     // TODO: support incremental sync
 
     if (_args.deleteMissing) {
