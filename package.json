@@ -1,6 +1,7 @@
 {
   "name": "fern-express-starter",
   "scripts": {
+    "watch": "tsc --watch",
     "build": "tsc",
     "build:api": "fern build",
     "start": "node lib/server.js",

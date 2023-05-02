@@ -59,6 +59,7 @@ const optionsSchema = z.object({
   targetFormat: z.string(),
   src: z.string(),
   dest: z.string(),
+  deleteMissing: z.boolean().default(false)
 });
 
 
@@ -96,6 +97,13 @@ export class SyncToService {
 
     console.log('Matching files:');
     console.log(filesToSync.map(file => file.fname).join('\n'));
+    // TODO: support incremental sync
+
+    if (_args.deleteMissing) {
+      logger.info({ ctx, msg: "deleteMissing", dest: _args.dest })
+      fs.emptyDirSync(_args.dest)
+    }
+
     switch (args.targetFormat) {
       case 'markdown':
         const dest = new MarkdownDestination()

@@ -3,7 +3,6 @@ import morgan from 'morgan';
 import { Stream } from 'stream';
 import { register } from "./api/generated";
 import dendron from "./services/dendron";
-import imdb from "./services/imdb";
 import { logger } from "./logger";
 
 
@@ -35,7 +34,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 
 register(app, {
-  imdb,
   dendron
 });
 
