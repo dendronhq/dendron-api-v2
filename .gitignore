@@ -5,3 +5,5 @@ node_modules
 generated
 src/api/generated
 logs
+.yarn
+yarn-error.log
