@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import matter from "gray-matter";
 import _ from "lodash";
 import { minimatch } from "minimatch";
+import path from "path";
 import * as z from "zod";
 import { SyncToRequest } from "../../api/generated/api";
 import { logger } from "../../logger";
@@ -15,6 +16,8 @@ type ExcludeOption = {
   tags: { key: string; value: any }[];
   hierarchies: string[];
 };
+
+// --- Utils
 
 const processIncludeOption = (value: string): IncludeOption => {
   const out = value
@@ -60,6 +63,31 @@ const processExcludeOption = (value: string): ExcludeOption => {
   return _.defaults(out, { tags: [], hierarchies: [] });
 };
 
+function readFilesRecursively(dir: string): string[] {
+  const files: string[] = [];
+
+  function readDirRecursive(directory: string, currentPath = ''): void {
+    const items = fs.readdirSync(directory);
+    for (const item of items) {
+      console.log(item)
+      const itemPath = path.join(directory, item);
+      const stat = fs.statSync(itemPath);
+      if (stat.isDirectory()) {
+        const nextPath = path.join(currentPath, item);
+        readDirRecursive(itemPath, nextPath);
+      } else if (stat.isFile()) {
+        const filePath = path.join(currentPath, item);
+        files.push(filePath);
+      }
+    }
+  }
+
+  readDirRecursive(dir);
+  return files;
+}
+
+
+
 const optionsSchema = z.object({
   include: z.string().transform(processIncludeOption),
   exclude: z.string().transform(processExcludeOption),
@@ -76,21 +104,15 @@ export class SyncToService {
     logger.info({ ctx, msg: "enter", args: _args });
 
     // Read all files with frontmatter using the "gray-matter" library
-    const files = fs
-      .readdirSync(args.src)
+    const files = readFilesRecursively(args.src)
       .filter((file) => file.endsWith(".md"))
       .map((file) => {
         const contents = fs.readFileSync(`${args.src}/${file}`, "utf8");
-        const fname = file.replace(/\.md$/, "");
+        const fname = path.basename(file).replace(/\.md$/, "")
+        logger.error({ ctx, fname });
         return { ...matter(contents), fname, fpath: `${args.src}/${file}` };
       });
     logger.info({ ctx, msg: "fin:readFiles", numFiles: files.length });
-
-    // const matchOnHierarchy = (opts: {hierarchies: string[], files: (typeof files)}) => {
-    //   let filesToSync = opts.hierarchies.flatMap(hierarchyMatchPattern => {
-    //     return opts.files.filter(file => minimatch(file.fname, hierarchyMatchPattern));
-    //   }) as unknown as (typeof files)
-    // }
 
     // include
     const hierarchies = _args.include.hierarchies;
@@ -115,7 +137,9 @@ export class SyncToService {
     //   filesToSync = filesToSync.filter(file => file.data[tag.key] !== tag.value);
     // });
     // awlays exclude `public: false`
-    // filesToSync = filesToSync.filter(file => (!('public' in file.data) || file.data['public']));
+
+    filesToSync = filesToSync.filter(file => file.data.published !== false)
+    // filesToSync = filesToSync.filter(file => (!('public' in file.data) || file.data.public));
     logger.info({ ctx, msg: "fin:excludeTags", numFiles: filesToSync.length });
 
     logger.info({
