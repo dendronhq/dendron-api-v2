@@ -3,7 +3,7 @@
   "scripts": {
     "watch": "tsc --watch",
     "build": "tsc",
-    "build:api": "fern build",
+    "build:api": "fern generate",
     "start": "node lib/server.js",
     "dev": "nodemon src/server.ts",
     "format": "prettier --write src/**",

@@ -16,6 +16,12 @@ service:
       display-name: Sync data to a target format
       request: SyncToRequest
       response: SyncToResponse
+    vaultsMerge:
+      path: "/vaults/merge"
+      method: POST
+      display-name: Merge two vaults
+      request: MergeVaultsRequest
+      response: MergeVaultsResponse
 
 types:
   RenderMarkdownRequest:
@@ -44,6 +50,17 @@ types:
       - markdown
       - gfm
 
+  MergeVaultsRequest:
+    properties:
+      src: string
+      dest: string
+      exclude: string
+
+  MergeVaultsResponse:
+    properties:
+      numNotesNew: integer
+      numNotesMerged: integer
+
   SyncToRequest:
     properties:
       src: string
@@ -51,7 +68,7 @@ types:
       targetFormat: string
       include: string
       exclude: string
-      deleteMissing: 
+      deleteMissing:
         type: optional<boolean>
         docs: should delete files that are not present in dest. default is false
 
