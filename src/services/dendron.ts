@@ -17,7 +17,13 @@ export default new DendronService({
     const resp = await service.execute(req.body)
     return res.send(resp);
   },
+
   async vaultsMerge(req, res) {
     throw Error("not implemented")
   }
+
+  async vaultsIndex(req, res) {
+    throw Error("not implemented")
+  }
+
 });

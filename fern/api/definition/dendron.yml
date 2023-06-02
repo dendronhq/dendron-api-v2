@@ -22,6 +22,12 @@ service:
       display-name: Merge two vaults
       request: MergeVaultsRequest
       response: MergeVaultsResponse
+    vaultsIndex:
+      path: "/vaults/index"
+      method: POST
+      display-name: Index a vault
+      request: IndexVaultsRequest
+      response: IndexVaultsResponse
 
 types:
   RenderMarkdownRequest:
@@ -49,6 +55,15 @@ types:
     enum:
       - markdown
       - gfm
+
+  IndexVaultsRequest:
+    properties:
+      src: string
+      dest: string
+
+  IndexVaultsResponse:
+    properties:
+      numNotesIndexed: integer
 
   MergeVaultsRequest:
     properties:

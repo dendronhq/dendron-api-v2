@@ -86,8 +86,6 @@ function readFilesRecursively(dir: string): string[] {
   return files;
 }
 
-
-
 const optionsSchema = z.object({
   include: z.string().transform(processIncludeOption),
   exclude: z.string().transform(processExcludeOption),

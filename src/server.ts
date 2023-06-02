@@ -1,15 +1,17 @@
-import express, { NextFunction, Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import express, { Request, Response } from "express";
 import morgan from 'morgan';
 import { Stream } from 'stream';
 import { register } from "./api/generated";
-import dendron from "./services/dendron";
 import { logger } from "./logger";
+import dendron from "./services/dendron";
 
 
 
 // Morgan logger configuration
 const morganStream = new Stream.Writable({
-  write: function (chunk: any, encoding: any, next: Function) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  write: function (chunk: any, _encoding: any, next: Function) {
     logger.info(chunk.toString());
     next();
   },
@@ -26,8 +28,9 @@ app.use(
     },
   })
 );
+
 // Express middleware for handling errors
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response) => {
   logger.error(err.stack);
   res.status(500).send('Something went wrong!');
 });

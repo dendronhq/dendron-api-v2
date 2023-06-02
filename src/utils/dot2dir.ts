@@ -1,7 +1,7 @@
 import fs from "fs-extra";
+import matter from "gray-matter";
 import _ from "lodash";
 import path from "path";
-import matter from "gray-matter";
 import { FileData } from "../types";
 
 export type FileType = "file" | "index";
@@ -40,6 +40,9 @@ export function fname2FilePath(fname: string, fileType: FileType) {
   }
 }
 
+/**
+ *  Materialize files and folders in the file system
+ */
 export async function materializeFnames2FilesAndFolders(fileMappings: Map<string, FileType>, opts: { fnameDataMapping: Map<string, FileData>, baseDir: string }) {
   const fileMappingArray = Array.from(fileMappings.entries());
   await Promise.all(_.map(fileMappingArray, ([fname, fileType]) => {
@@ -59,4 +62,27 @@ export async function materializeFnames2FilesAndFolders(fileMappings: Map<string
     const matterResult = matter.stringify(content, data);
     return fs.writeFile(_fpath, matterResult)
   }));
+}
+
+export function readFilesRecursively(dir: string): string[] {
+  const files: string[] = [];
+
+  function readDirRecursive(directory: string, currentPath = ''): void {
+    const items = fs.readdirSync(directory);
+    for (const item of items) {
+      console.log(item)
+      const itemPath = path.join(directory, item);
+      const stat = fs.statSync(itemPath);
+      if (stat.isDirectory()) {
+        const nextPath = path.join(currentPath, item);
+        readDirRecursive(itemPath, nextPath);
+      } else if (stat.isFile()) {
+        const filePath = path.join(currentPath, item);
+        files.push(filePath);
+      }
+    }
+  }
+
+  readDirRecursive(dir);
+  return files;
 }
