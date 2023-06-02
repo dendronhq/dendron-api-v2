@@ -1,6 +1,6 @@
 // this `FernApi` export is generated from your organization name in fern.config.json:
-import { DendronService } from "../api/generated/api/resources/dendron/service/DendronService";
 import Markdoc from '@markdoc/markdoc';
+import { DendronService } from "../api/generated/api/resources/dendron/service/DendronService";
 import { SyncToService } from "../serviceImpl/sync/syncToService";
 
 export default new DendronService({
@@ -16,5 +16,8 @@ export default new DendronService({
     const service = new SyncToService()
     const resp = await service.execute(req.body)
     return res.send(resp);
+  },
+  async vaultsMerge(req, res) {
+    throw Error("not implemented")
   }
 });
