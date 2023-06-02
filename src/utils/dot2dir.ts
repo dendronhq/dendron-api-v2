@@ -70,7 +70,6 @@ export function readFilesRecursively(dir: string): string[] {
   function readDirRecursive(directory: string, currentPath = ''): void {
     const items = fs.readdirSync(directory);
     for (const item of items) {
-      console.log(item)
       const itemPath = path.join(directory, item);
       const stat = fs.statSync(itemPath);
       if (stat.isDirectory()) {
@@ -85,4 +84,10 @@ export function readFilesRecursively(dir: string): string[] {
 
   readDirRecursive(dir);
   return files;
+}
+
+export function file2note(fpath: string) {
+  const contents = fs.readFileSync(fpath, "utf8");
+  const fname = path.basename(fpath).replace(/\.md$/, "")
+  return { ...matter(contents), fname, fpath };
 }

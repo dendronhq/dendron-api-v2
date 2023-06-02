@@ -7,3 +7,6 @@ src/api/generated
 logs
 .yarn
 yarn-error.log
+.env
+*.db
+dev.db-journal

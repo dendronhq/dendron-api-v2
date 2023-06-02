@@ -1,11 +1,10 @@
 import fs from "fs-extra";
-import matter from "gray-matter";
 import _ from "lodash";
 import { minimatch } from "minimatch";
-import path from "path";
 import * as z from "zod";
 import { SyncToRequest } from "../../api/generated/api";
 import { logger } from "../../logger";
+import { file2note, readFilesRecursively } from "../../utils/dot2dir";
 import { MarkdownDestination } from "./markdownDestination";
 
 type IncludeOption = {
@@ -63,29 +62,6 @@ const processExcludeOption = (value: string): ExcludeOption => {
   return _.defaults(out, { tags: [], hierarchies: [] });
 };
 
-function readFilesRecursively(dir: string): string[] {
-  const files: string[] = [];
-
-  function readDirRecursive(directory: string, currentPath = ''): void {
-    const items = fs.readdirSync(directory);
-    for (const item of items) {
-      console.log(item)
-      const itemPath = path.join(directory, item);
-      const stat = fs.statSync(itemPath);
-      if (stat.isDirectory()) {
-        const nextPath = path.join(currentPath, item);
-        readDirRecursive(itemPath, nextPath);
-      } else if (stat.isFile()) {
-        const filePath = path.join(currentPath, item);
-        files.push(filePath);
-      }
-    }
-  }
-
-  readDirRecursive(dir);
-  return files;
-}
-
 const optionsSchema = z.object({
   include: z.string().transform(processIncludeOption),
   exclude: z.string().transform(processExcludeOption),
@@ -105,10 +81,8 @@ export class SyncToService {
     const files = readFilesRecursively(args.src)
       .filter((file) => file.endsWith(".md"))
       .map((file) => {
-        const contents = fs.readFileSync(`${args.src}/${file}`, "utf8");
-        const fname = path.basename(file).replace(/\.md$/, "")
-        logger.error({ ctx, fname });
-        return { ...matter(contents), fname, fpath: `${args.src}/${file}` };
+        const fpath = `${args.src}/${file}`;
+        return file2note(fpath)
       });
     logger.info({ ctx, msg: "fin:readFiles", numFiles: files.length });
 

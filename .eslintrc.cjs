@@ -18,5 +18,7 @@ module.exports = {
     project: "./tsconfig.json",
   },
   plugins: ["@typescript-eslint"],
-  rules: {},
+  rules: {
+    "@typescript-eslint/consistent-type-definitions": "off",
+  },
 };
