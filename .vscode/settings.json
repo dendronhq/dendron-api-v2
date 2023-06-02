@@ -8,5 +8,13 @@
     "editor.codeActionsOnSave": {
       "source.organizeImports": true
     }
-  }
+  },
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "db",
+      "database": "${workspaceFolder:dendron-api-v2}/prisma/dev.db"
+    }
+  ]
 }

@@ -20,5 +20,6 @@ module.exports = {
   plugins: ["@typescript-eslint"],
   rules: {
     "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/no-extraneous-class": "off",
   },
 };

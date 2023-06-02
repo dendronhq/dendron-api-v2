@@ -10,13 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model note {
+model Note {
   id         String @id
   fname      String
   title      String
+  tags       String
+  body       String
   updated    Int
   created    Int
   vault_name String
 
   @@index([id], map: "idx_notes_id")
+  @@map("note")
 }

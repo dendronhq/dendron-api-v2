@@ -60,6 +60,7 @@ types:
     properties:
       src: string
       dest: string
+      vaultName: string
 
   IndexVaultsResponse:
     properties:

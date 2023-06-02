@@ -1,9 +1,9 @@
 import { SyncToRequest, SyncToResponse } from "../../api/generated/api";
-import { FileData, MatterFiles } from "../../types";
+import { FileData, MatterFile } from "../../types";
 import { fnames2FileTypeMap, materializeFnames2FilesAndFolders } from "../../utils/dot2dir";
 
 export class MarkdownDestination {
-  async sync(files: MatterFiles[], opts: SyncToRequest): Promise<SyncToResponse> {
+  async sync(files: MatterFile[], opts: SyncToRequest): Promise<SyncToResponse> {
     const fnames = files.map(file => file.fname)
     const fnameFileTypeMapping = fnames2FileTypeMap(fnames);
 
