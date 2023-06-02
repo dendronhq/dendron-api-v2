@@ -6,7 +6,8 @@ async function main() {
   const resp = await client.execute({
     src: "/Users/kevinlin/workspaces/kevin-garden/notes/notes",
     dest: "",
-    vaultName: "notes"
+    vaultName: "notes",
+    purge: true
   })
 }
 

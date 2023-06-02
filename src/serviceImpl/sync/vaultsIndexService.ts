@@ -16,13 +16,17 @@ export class VaultsIndexService {
 
     const notes = readFilesRecursively(args.src)
       .filter((file) => file.endsWith(".md"))
-      // TODO: tmp
-      .slice(0, 10)
       .map((file) => {
         const fpath = `${args.src}/${file}`;
         const note = file2note(fpath);
         return note;
       });
+
+
+    if (args.purge) {
+      logger.info({ ctx, msg: "purging..." })
+      await pclient.note.deleteMany();
+    }
 
     for (const note of notes) {
       const data = NoteUtils.getData(note);
