@@ -64,7 +64,8 @@ export async function materializeFnames2FilesAndFolders(fileMappings: Map<string
   }));
 }
 
-export function readFilesRecursively(dir: string): string[] {
+export function readFilesRecursively(dir: string,
+  filterFns: ((filename: string) => boolean)[] = []): string[] {
   const files: string[] = [];
 
   function readDirRecursive(directory: string, currentPath = ''): void {
@@ -77,7 +78,13 @@ export function readFilesRecursively(dir: string): string[] {
         readDirRecursive(itemPath, nextPath);
       } else if (stat.isFile()) {
         const filePath = path.join(currentPath, item);
-        files.push(filePath);
+        const shouldInclude = filterFns.reduce(
+          (prev, currFn) => prev && currFn(filePath),
+          true
+        );
+        if (shouldInclude) {
+          files.push(filePath);
+        }
       }
     }
   }

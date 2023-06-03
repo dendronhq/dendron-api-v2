@@ -65,6 +65,12 @@ export class VaultsRepairService {
           note.data.created = 1;
         }
 
+        if (!_.isArray(note.data.tags)) {
+          repaired = true;
+          // TODO: figure this out later
+          note.data.tags = []
+        }
+
         if (repaired) {
           needsRepair.push(note);
         }

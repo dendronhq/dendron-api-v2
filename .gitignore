@@ -13,3 +13,4 @@ dev.db-journal
 db.session.sql
 prisma/notes-nl-with-body.json
 src/proto.ts
+local

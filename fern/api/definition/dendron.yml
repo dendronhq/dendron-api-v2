@@ -73,6 +73,7 @@ types:
   IndexVaultsRequest:
     properties:
       src: string
+      include: optional<FilterOptions>
       dest: string
       vaultName: string
       purge: optional<boolean>
@@ -106,3 +107,7 @@ types:
   SyncToResponse:
     properties:
       numSynced: integer
+
+  FilterOptions:
+    properties:
+      hierarchies: list<string>

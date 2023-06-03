@@ -20,9 +20,13 @@ export default new DendronService({
 
   async vaultsMerge(req, res) {
     throw Error("not implemented")
-  }
+  },
 
   async vaultsIndex(req, res) {
+    throw Error("not implemented")
+  },
+
+  async vaultsRepair(req, res) {
     throw Error("not implemented")
   }
 

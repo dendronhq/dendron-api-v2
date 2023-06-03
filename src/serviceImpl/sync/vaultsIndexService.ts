@@ -1,27 +1,45 @@
 import { PrismaClient } from "@prisma/client";
+import _ from "lodash";
+import { minimatch } from "minimatch";
 import { IndexVaultsRequest } from "../../api/generated/api";
 import { logger } from "../../logger";
 import { file2note, readFilesRecursively } from "../../utils/dot2dir";
 import { NoteUtils } from "../../utils/note";
 
+const parseTagsFromContent = (body: string): string[] => {
+  const tags = body.match(/#(\w+)/g) || [];
+  return tags.map((tag) => tag.slice(1));
+}
+
+//filterFns: ((filename: string) => boolean)[] = []): string[] {
+const filterByHierarchies = (hierarchies: string[]) => {
+  return (fname: string) => {
+    return _.some(hierarchies, (hierarchyMatchPattern) => {
+      return minimatch(fname, hierarchyMatchPattern);
+    });
+  }
+}
 
 // TODO: doesn't handle deleted records
 export class VaultsIndexService {
   async execute(args: IndexVaultsRequest) {
     const ctx = "VaultsIndexService";
     logger.info({ ctx, msg: "enter", args });
-    // TODO
     const dest = args.dest;
+    const include = args.include || { hierarchies: [] };
     const pclient = new PrismaClient()
     const vaultName = args.vaultName;
 
-    const notes = readFilesRecursively(args.src)
+
+    const notes = readFilesRecursively(args.src, [filterByHierarchies(include.hierarchies)])
       .filter((file) => file.endsWith(".md"))
       .map((file) => {
         const fpath = `${args.src}/${file}`;
         const note = file2note(fpath);
         return note;
       });
+
+    logger.info({ ctx, msg: "fin:readFiles", numFiles: notes.length });
 
 
     if (args.purge) {
@@ -33,6 +51,13 @@ export class VaultsIndexService {
       const data = NoteUtils.getOrFillData(note);
       const { content, fname } = note;
       const { id, title, created, updated, tags } = data;
+
+      const tagsFromContent = parseTagsFromContent(content);
+      tagsFromContent.forEach((tag) => {
+        if (!tags.includes(tag)) {
+          tags.push(tag)
+        }
+      })
 
       const tableData = {
         id, title,
