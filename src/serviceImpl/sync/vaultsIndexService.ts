@@ -7,7 +7,7 @@ import { file2note, readFilesRecursively } from "../../utils/dot2dir";
 import { NoteUtils } from "../../utils/note";
 
 const parseTagsFromContent = (body: string): string[] => {
-  const tags = body.match(/#(\w+)/g) || [];
+  const tags = body.match(/#[\w\.]+/g) || [];
   return tags.map((tag) => tag.slice(1));
 }
 
