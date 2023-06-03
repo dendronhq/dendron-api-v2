@@ -5,6 +5,7 @@ import { file2note, readFilesRecursively } from "../../utils/dot2dir";
 import { NoteUtils } from "../../utils/note";
 
 
+// TODO: doesn't handle deleted records
 export class VaultsIndexService {
   async execute(args: IndexVaultsRequest) {
     const ctx = "VaultsIndexService";
@@ -32,18 +33,18 @@ export class VaultsIndexService {
       const data = NoteUtils.getOrFillData(note);
       const { content, fname } = note;
       const { id, title, created, updated, tags } = data;
+
+      const tableData = {
+        id, title,
+        created: Math.round(created / 1000),
+        updated: Math.round(updated / 1000),
+        tags: JSON.stringify(tags),
+        fname,
+        vault_name: vaultName,
+        body: content
+      }
       try {
-        await pclient.note.create({
-          data: {
-            id, title,
-            created: Math.round(created / 1000),
-            updated: Math.round(updated / 1000),
-            tags: JSON.stringify(tags),
-            fname,
-            vault_name: vaultName,
-            body: content
-          }
-        })
+        await pclient.note.upsert({ create: tableData, update: tableData, where: { id } })
       } catch (e) {
         logger.error({ ctx, msg: "error", e, note: { fname, data } })
         throw e;

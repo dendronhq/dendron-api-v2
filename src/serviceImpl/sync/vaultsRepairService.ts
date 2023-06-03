@@ -49,7 +49,7 @@ export class VaultsRepairService {
           note.data.id = NoteUtils.genId();
         }
 
-        if (note.data.title === undefined) {
+        if (note.data.title === undefined || note.data.title === '__MISSING__' || note.data.title === null || !_.isString(note.data.title)) {
           repaired = true;
           note.data.title = NoteUtils.genTitle(note);
         }
