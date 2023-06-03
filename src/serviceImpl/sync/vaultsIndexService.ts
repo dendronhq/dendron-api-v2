@@ -29,7 +29,7 @@ export class VaultsIndexService {
     }
 
     for (const note of notes) {
-      const data = NoteUtils.getData(note);
+      const data = NoteUtils.getOrFillData(note);
       const { content, fname } = note;
       const { id, title, created, updated, tags } = data;
       try {

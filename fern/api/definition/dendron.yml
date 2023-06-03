@@ -28,6 +28,12 @@ service:
       display-name: Index a vault
       request: IndexVaultsRequest
       response: IndexVaultsResponse
+    vaultsRepair:
+      path: "/vaults/repair"
+      method: POST
+      display-name: Repair a vault
+      request: RepairVaultsRequest
+      response: RepairVaultsResponse
 
 types:
   RenderMarkdownRequest:
@@ -55,6 +61,14 @@ types:
     enum:
       - markdown
       - gfm
+
+  RepairVaultsRequest:
+    properties:
+      src: string
+
+  RepairVaultsResponse:
+    properties:
+      affected: integer
 
   IndexVaultsRequest:
     properties:

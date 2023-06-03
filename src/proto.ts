@@ -1,4 +1,5 @@
 import { VaultsIndexService } from "./serviceImpl/sync/vaultsIndexService";
+import { VaultsRepairService } from "./serviceImpl/sync/vaultsRepairService";
 
 
 async function main() {
@@ -11,7 +12,16 @@ async function main() {
   })
 }
 
-main()
+async function main2() {
+  const client = new VaultsRepairService();
+  const resp = await client.execute({
+    src: "/Users/kevinlin/workspaces/kevin-garden/notes/notes",
+  })
+}
+
+
+
+main2();
 
 
 // const storage = '/Users/kevinlin/workspaces/kevin-garden/metadata-es.db'
