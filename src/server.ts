@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Request, Response } from "express";
 import morgan from 'morgan';
@@ -30,7 +31,8 @@ app.use(
 );
 
 // Express middleware for handling errors
-app.use((err: Error, req: Request, res: Response) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+app.use((err: Error, req: Request, res: Response, next: Function) => {
   logger.error(err.stack);
   res.status(500).send('Something went wrong!');
 });
