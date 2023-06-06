@@ -2,6 +2,7 @@
 import Markdoc from '@markdoc/markdoc';
 import { DendronService } from "../api/generated/api/resources/dendron/service/DendronService";
 import { SyncToService } from "../serviceImpl/sync/syncToService";
+import { VaultsIndexService } from '../serviceImpl/sync/vaultsIndexService';
 
 export default new DendronService({
   markdownRender(req, res) {
@@ -23,7 +24,9 @@ export default new DendronService({
   },
 
   async vaultsIndex(req, res) {
-    throw Error("not implemented")
+    const client = new VaultsIndexService();
+    const resp = await client.execute(req.body)
+    return res.send(resp);
   },
 
   async vaultsRepair(req, res) {

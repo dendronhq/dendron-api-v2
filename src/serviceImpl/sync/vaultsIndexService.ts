@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
 import _ from "lodash";
 import { minimatch } from "minimatch";
-import { IndexVaultsRequest } from "../../api/generated/api";
+import { IndexVaultsRequest, IndexVaultsResponse } from "../../api/generated/api";
 import { logger } from "../../logger";
 import { file2note, readFilesRecursively } from "../../utils/dot2dir";
 import { NoteUtils } from "../../utils/note";
 
 const parseTagsFromContent = (body: string): string[] => {
-  const tags = body.match(/#[\w\.]+/g) || [];
+  const tags = body.match(/#[\w.]+/g) || [];
   return tags.map((tag) => tag.slice(1));
 }
 
@@ -22,10 +22,9 @@ const filterByHierarchies = (hierarchies: string[]) => {
 
 // TODO: doesn't handle deleted records
 export class VaultsIndexService {
-  async execute(args: IndexVaultsRequest) {
+  async execute(args: IndexVaultsRequest): Promise<IndexVaultsResponse> {
     const ctx = "VaultsIndexService";
     logger.info({ ctx, msg: "enter", args });
-    const dest = args.dest;
     const include = args.include || { hierarchies: [] };
     const pclient = new PrismaClient()
     const vaultName = args.vaultName;
@@ -77,6 +76,7 @@ export class VaultsIndexService {
     }
 
     logger.info({ ctx, msg: "fin:readFiles", numFiles: notes.length });
+    return { numNotesIndexed: notes.length }
 
   }
 }
