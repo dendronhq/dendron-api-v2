@@ -61,17 +61,17 @@ export class NoteUtils {
 
 
 
-export async function note2File({
-  note,
-  vault,
-  wsRoot,
-}: {
-  note: NoteProps;
-  vault: DVault;
-  wsRoot: string;
-}) {
-  const ext = ".md";
-  const payload = NoteUtils.serialize(note);
-  const vpath = vault2Path({ vault, wsRoot });
-  return genHash(payload);
-}
+// export async function note2File({
+//   note,
+//   vault,
+//   wsRoot,
+// }: {
+//   note: NoteProps;
+//   vault: DVault;
+//   wsRoot: string;
+// }) {
+//   const ext = ".md";
+//   const payload = NoteUtils.serialize(note);
+//   const vpath = vault2Path({ vault, wsRoot });
+//   return genHash(payload);
+// }

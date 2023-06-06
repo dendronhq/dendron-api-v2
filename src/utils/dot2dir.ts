@@ -44,20 +44,19 @@ export function fname2FilePath(fname: string, fileType: FileType) {
  *  Materialize files and folders in the file system
  */
 export async function materializeFnames2FilesAndFolders(fileMappings: Map<string, FileType>, opts: { fnameDataMapping: Map<string, FileData>, baseDir: string }) {
+
+  // make sure all folders exist
   const fileMappingArray = Array.from(fileMappings.entries());
   await Promise.all(_.map(fileMappingArray, ([fname, fileType]) => {
     const _fpath = path.join(opts.baseDir, fname2FilePath(fname, fileType))
     return fs.ensureDir(path.dirname(_fpath))
   }));
-  // // create all folders
-  // await Promise.all(fileMappings.map(fpath => {
-  //   return fs.ensureDir(path.dirname(fpath))
-  // }));
 
   // create all files
   await Promise.all(_.map(fileMappingArray, ([fname, fileType]) => {
     const _fpath = path.join(opts.baseDir, fname2FilePath(fname, fileType))
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const { content, data } = opts.fnameDataMapping.get(fname)!
     const matterResult = matter.stringify(content, data);
     return fs.writeFile(_fpath, matterResult)
