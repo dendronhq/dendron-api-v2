@@ -15,6 +15,19 @@ exports[`when calling VaultsIndexService when parsing tags should parse tags 1`]
 }
 `;
 
+exports[`when calling VaultsIndexService when parsing tags with number and dash should parse tags 1`] = `
+{
+  "body": "test content #foo.two-1",
+  "created": 1686425313,
+  "fname": "test.md",
+  "id": "1",
+  "tags": "["test","foo.two-1"]",
+  "title": "Test Note",
+  "updated": 1686425313,
+  "vault_name": "testVault",
+}
+`;
+
 exports[`when calling VaultsIndexService when parsing tags with number should parse tags 1`] = `
 {
   "body": "test content #foo.1",

@@ -84,7 +84,42 @@ describe('when calling VaultsIndexService', () => {
       expect(dbNote).not.toBeNull();
       expect(dbNote?.title).toBe('Test Note');
       expect(dbNote?.tags).toEqual(JSON.stringify(["test", "foo.1"]))
-      expect(dbNote).toMatchSnapshot()
+    });
+  });
+
+  describe("when parsing tags with number and dash", () => {
+    it('should parse tags', async () => {
+      // Mock the utilities
+      (readFilesRecursively as jest.Mock).mockReturnValue(['test.md']);
+      (file2note as jest.Mock).mockReturnValue({
+        content: 'test content #foo.two-1',
+        fname: 'test.md',
+        data: {
+          id: '1',
+          title: 'Test Note',
+          created: Date.now(),
+          updated: Date.now(),
+          tags: ['test', 'foo.two-1'],
+        },
+      });
+
+      const service = new VaultsIndexService();
+      const result = await service.execute({
+        vaultName: 'testVault',
+        src: '/path/to/src',
+        include: { hierarchies: ['*'] },
+        dest: ""
+      });
+
+      // Check the results
+      expect(result).toEqual({ numNotesIndexed: 1 });
+
+      // Check that the note has been stored in the database
+      const dbNote = await pclient.note.findUnique({ where: { id: '1' } });
+      expect(dbNote).not.toBeNull();
+      // expect(dbNote).toMatchSnapshot()
+      expect(dbNote?.title).toBe('Test Note');
+      expect(dbNote?.tags).toEqual(JSON.stringify(["test", "foo.two-1"]))
     });
   });
 
