@@ -25,6 +25,7 @@
     "morgan": "^1.10.0",
     "nanoid": "3.1.23",
     "sequelize": "^6.32.0",
+    "supertest": "^6.3.3",
     "winston": "^3.8.2",
     "zod": "^3.21.4"
   },
@@ -37,6 +38,7 @@
     "@types/nanoid": "^3.0.0",
     "@types/node": "^18.11.18",
     "@types/react": "^18.2.5",
+    "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "latest",
     "@typescript-eslint/parser": "latest",
     "eslint": "^8.33.0",

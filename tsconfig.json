@@ -5,10 +5,12 @@
     "target": "esnext",
     "moduleResolution": "node",
     "strict": true,
-    "rootDir": "src",
+    "rootDirs": [
+      "src",
+      "test"
+    ],
     "outDir": "lib",
     "allowSyntheticDefaultImports": true,
     "allowJs": true
-  },
-  "include": ["src"]
+  }
 }
