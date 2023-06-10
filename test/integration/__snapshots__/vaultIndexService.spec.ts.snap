@@ -1,3 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Integration Tests should return a successful response 1`] = `200`;
+
+exports[`when calling VaultsIndexService when parsing tags should parse tags 1`] = `
+{
+  "body": "test content #foo",
+  "created": 1686424899,
+  "fname": "test.md",
+  "id": "1",
+  "tags": "["test","foo"]",
+  "title": "Test Note",
+  "updated": 1686424899,
+  "vault_name": "testVault",
+}
+`;
+
+exports[`when calling VaultsIndexService when parsing tags with number should parse tags 1`] = `
+{
+  "body": "test content #foo.1",
+  "created": 1686425096,
+  "fname": "test.md",
+  "id": "1",
+  "tags": "["test","foo.1"]",
+  "title": "Test Note",
+  "updated": 1686425096,
+  "vault_name": "testVault",
+}
+`;

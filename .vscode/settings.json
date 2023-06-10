@@ -15,6 +15,12 @@
       "driver": "SQLite",
       "name": "db",
       "database": "${workspaceFolder:dendron-api-v2}/prisma/dev.db"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "integ",
+      "database": "${workspaceFolder:dendron-api-v2}/prisma/dev-integ.db"
     }
   ]
 }
