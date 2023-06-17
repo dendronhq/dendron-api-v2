@@ -25,6 +25,9 @@ function getUpdatedFromGit(fpath: string) {
 }
 
 
+/**
+ * See pkg.dendronv2-api.vaults.repair.md
+ */
 export class VaultsRepairService {
   async execute(args: RepairVaultsRequest) {
     const ctx = "VaultsIndexService";
