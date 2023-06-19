@@ -1,13 +1,16 @@
-import { FileData } from '../types';
-import { fnames2FileTypeMap, FileType, materializeFnames2FilesAndFolders } from './dot2dir';
 import fs from "fs-extra";
-import path from 'path';
+import path from "path";
+import { FileData } from '../types';
+import { FileType, fnames2FileTypeMap, materializeFnames2FilesAndFolders } from './dot2dir';
 
+/**
+ * This is used for testing. Read a directory recursively 
+ * @param dirPath 
+ * @returns A map of file names and their contents
+ */
 function readDirectoryRecursive(dirPath: string): Map<string, string> {
   const filesMap = new Map<string, string>();
   const files = fs.readdirSync(dirPath);
-  console.log(dirPath);
-
   for (const file of files) {
     const filePath = path.join(dirPath, file);
     const stats = fs.statSync(filePath);
@@ -28,7 +31,7 @@ function readDirectoryRecursive(dirPath: string): Map<string, string> {
 
 
 
-describe('determineFileType', () => {
+describe('fnames2FileTypeMap', () => {
   test('should correctly identify file types', () => {
     const filenames = [
       'bar',
@@ -37,7 +40,7 @@ describe('determineFileType', () => {
       'bar.alpha.one',
       'foo.two.three',
     ];
-    const expected: Map<string, FileType> = new Map([
+    const expected = new Map<string, FileType>([
       ['bar', 'index'],
       ['bar.two', 'file'],
       ['bar.alpha', 'index'],
@@ -50,14 +53,14 @@ describe('determineFileType', () => {
 
   test('should handle empty input', () => {
     const filenames: string[] = [];
-    const expected: Map<string, FileType> = new Map();
+    const expected = new Map<string, FileType>();
 
     expect(fnames2FileTypeMap(filenames)).toEqual(expected);
   });
 
   test('should handle single-level filenames', () => {
     const filenames = ['foo', 'bar', 'baz'];
-    const expected: Map<string, FileType> = new Map([
+    const expected = new Map<string, FileType>([
       ['foo', 'file'],
       ['bar', 'file'],
       ['baz', 'file'],
@@ -68,7 +71,7 @@ describe('determineFileType', () => {
 
   test('should handle multi-level filenames', () => {
     const filenames = ['a', 'a.b', 'a.b.c', 'a.b.c.d', 'a.b.d'];
-    const expected: Map<string, FileType> = new Map([
+    const expected = new Map<string, FileType>([
       ['a', 'index'],
       ['a.b', 'index'],
       ['a.b.c', 'index'],
@@ -82,6 +85,11 @@ describe('determineFileType', () => {
 
 
 describe('materializeFnames2FilesAndFolders', () => {
+  const BASE_DIR = '/tmp/dendron';
+  beforeEach(() => {
+    fs.emptyDirSync(BASE_DIR);
+  });
+
   test('should correctly materialize files and folders', async () => {
     const filenames = [
       'bar',
@@ -105,38 +113,34 @@ describe('materializeFnames2FilesAndFolders', () => {
       "/tmp/dendron/foo/two/three.md",
     ]
 
-    await materializeFnames2FilesAndFolders(fnames2FileTypeMap(filenames), { baseDir: '/tmp/dendron', fnameDataMapping: new Map<string, FileData>(Object.entries(fnameDataMapping)) });
-    const out = readDirectoryRecursive('/tmp/dendron')
+    await materializeFnames2FilesAndFolders(fnames2FileTypeMap(filenames), { baseDir: BASE_DIR, fnameDataMapping: new Map<string, FileData>(Object.entries(fnameDataMapping)) });
+    const out = readDirectoryRecursive(BASE_DIR)
     expect(out).toMatchSnapshot();
     expect(Array.from(out.keys())).toEqual(expected)
   });
 
-  // test('should handle empty input', () => {
-  //   const filenames: string[] = [];
-  //   const expected: string[] = [];
+  describe('transformTags', () => {
+    test('should replace dots in tags with slashes', async () => {
+      const filenames = [
+        'tags.fm-only',
+        'tags.body-only',
+        'tags.fm-and-body',
+      ];
+      const fnameDataMapping = {
+        'tags.fm-only': { content: '', data: { tags: ['fm.one'] } },
+        'tags.fm-mult': { content: '', data: { tags: ['fm.one', 'fm.two'] } },
+        'tags.body-only': { content: '#body.one\n#body.one.two', data: {} },
+        'tags.fm-and-body': { content: '#body.one', data: { tags: ['fm.one'] } },
+      };
+      await materializeFnames2FilesAndFolders(fnames2FileTypeMap(filenames),
+        { baseDir: BASE_DIR, fnameDataMapping: new Map<string, FileData>(Object.entries(fnameDataMapping)), transformTags: true }
+      );
+      const out = readDirectoryRecursive(BASE_DIR)
+      expect(out).toMatchSnapshot();
+    });
+  });
 
-  //   expect(dot2dirPath(filenames)).toEqual(expected);
-  // });
-
-  // test('should handle single-level filenames', () => {
-  //   const filenames = ['foo', 'bar', 'baz'];
-  //   const expected = [
-  //     "foo.md", "bar.md", "baz.md"
-  //   ];
-
-  //   expect(dot2dirPath(filenames)).toEqual(expected);
-  // });
-
-  // test('should handle multi-level filenames', () => {
-  //   const filenames = ['a', 'a.b', 'a.b.c', 'a.b.c.d', 'a.b.d'];
-  //   const expected = [
-  //     'a/index.md',
-  //     'a/b/index.md',
-  //     'a/b/c/index.md',
-  //     'a/b/c/d.md',
-  //     'a/b/d.md',
-  //   ]
-
-  //   expect(dot2dirPath(filenames)).toEqual(expected);
-  // });
 });
+
+
+

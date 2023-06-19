@@ -100,6 +100,9 @@ types:
       targetFormat: string
       include: string
       exclude: string
+      transformTags:
+        type: optional<boolean>
+        docs: transform dot delimited tags to '/' delimited tags
       deleteMissing:
         type: optional<boolean>
         docs: should delete files that are not present in dest. default is false

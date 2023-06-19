@@ -73,6 +73,7 @@ const optionsSchema = z.object({
 });
 
 export class SyncToService {
+
   async execute(args: SyncToRequest) {
     const ctx = "SyncToService";
     const _args = optionsSchema.parse(args);
@@ -106,10 +107,6 @@ export class SyncToService {
         (file) => !minimatch(file.fname, hierarchyMatchPattern)
       );
     }) as unknown as typeof files;
-    // _args.exclude.tags.forEach(tag => {
-    //   filesToSync = filesToSync.filter(file => file.data[tag.key] !== tag.value);
-    // });
-    // awlays exclude `public: false`
 
     filesToSync = filesToSync.filter(file => file.data.published !== false)
     // filesToSync = filesToSync.filter(file => (!('public' in file.data) || file.data.public));
@@ -117,7 +114,7 @@ export class SyncToService {
 
     logger.info({
       ctx,
-      matches: filesToSync.map((file) => file.fname).join("\n"),
+      matches: filesToSync.map((file) => file.fname).length
     });
     // TODO: support incremental sync
 

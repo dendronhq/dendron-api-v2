@@ -13,7 +13,7 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "test:setup": "yarn stage:integ -- yarn prisma migrate reset",
-    "test": "yarn stage:integ -- jest"
+    "test": "yarn stage:integ jest"
   },
   "dependencies": {
     "@markdoc/markdoc": "^0.2.2",

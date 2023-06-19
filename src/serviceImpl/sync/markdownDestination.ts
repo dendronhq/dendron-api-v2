@@ -13,7 +13,7 @@ export class MarkdownDestination {
       fnameDataMapping.set(fname, { content, data })
     });
 
-    await materializeFnames2FilesAndFolders(fnameFileTypeMapping, { baseDir, fnameDataMapping })
+    await materializeFnames2FilesAndFolders(fnameFileTypeMapping, { baseDir, fnameDataMapping, transformTags: opts.transformTags })
     return { numSynced: fnames.length }
   }
 }

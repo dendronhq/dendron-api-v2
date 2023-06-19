@@ -3,6 +3,7 @@ import matter from "gray-matter";
 import _ from "lodash";
 import path from "path";
 import { FileData } from "../types";
+import { readDirRecursive } from "./file";
 
 export type FileType = "file" | "index";
 
@@ -43,7 +44,8 @@ export function fname2FilePath(fname: string, fileType: FileType) {
 /**
  *  Materialize files and folders in the file system
  */
-export async function materializeFnames2FilesAndFolders(fileMappings: Map<string, FileType>, opts: { fnameDataMapping: Map<string, FileData>, baseDir: string }) {
+export async function materializeFnames2FilesAndFolders(fileMappings: Map<string, FileType>,
+  opts: { fnameDataMapping: Map<string, FileData>, baseDir: string, transformTags?: boolean }) {
 
   // make sure all folders exist
   const fileMappingArray = Array.from(fileMappings.entries());
@@ -56,8 +58,14 @@ export async function materializeFnames2FilesAndFolders(fileMappings: Map<string
   await Promise.all(_.map(fileMappingArray, ([fname, fileType]) => {
     const _fpath = path.join(opts.baseDir, fname2FilePath(fname, fileType))
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const { content, data } = opts.fnameDataMapping.get(fname)!
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, prefer-const
+    let { content, data } = opts.fnameDataMapping.get(fname)!
+
+    // regex that matches all tags with dots and replaces them with forward slash
+    if (opts.transformTags) {
+      ({ content, data } = transfromTags({ content, data }))
+    }
+
     const matterResult = matter.stringify(content, data);
     return fs.writeFile(_fpath, matterResult)
   }));
@@ -65,31 +73,25 @@ export async function materializeFnames2FilesAndFolders(fileMappings: Map<string
 
 export function readFilesRecursively(dir: string,
   filterFns: ((filename: string) => boolean)[] = []): string[] {
-  const files: string[] = [];
+  return readDirRecursive(dir, '', filterFns)
+}
 
-  function readDirRecursive(directory: string, currentPath = ''): void {
-    const items = fs.readdirSync(directory);
-    for (const item of items) {
-      const itemPath = path.join(directory, item);
-      const stat = fs.statSync(itemPath);
-      if (stat.isDirectory()) {
-        const nextPath = path.join(currentPath, item);
-        readDirRecursive(itemPath, nextPath);
-      } else if (stat.isFile()) {
-        const filePath = path.join(currentPath, item);
-        const shouldInclude = filterFns.reduce(
-          (prev, currFn) => prev && currFn(filePath),
-          true
-        );
-        if (shouldInclude) {
-          files.push(filePath);
-        }
-      }
-    }
+function transfromTags(opts: { data: any, content: string }) {
+  const { data, content } = opts;
+  let cleanTags = _.get(data, 'tags', []);
+  // TODO: we have bad casees like 
+  // tags:
+  //   - - - tags.dendron.lvl2
+  if (cleanTags && _.isArray(cleanTags) && _.isString(cleanTags[0])) {
+    cleanTags = cleanTags.map((tag: string) => {
+      return tag.replace(/\./g, '/')
+    });
   }
-
-  readDirRecursive(dir);
-  return files;
+  data.tags = cleanTags;
+  const cleanContent = content.replace(/#([^\s]+)/g, (_, tag) => {
+    return `#${tag.replace(/\./g, '/')}`
+  });
+  return { data, content: cleanContent }
 }
 
 export function file2note(fpath: string) {

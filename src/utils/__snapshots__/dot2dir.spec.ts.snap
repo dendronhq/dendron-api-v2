@@ -29,3 +29,26 @@ foo.two.three
 ",
 }
 `;
+
+exports[`materializeFnames2FilesAndFolders transformTags should replace dots in tags with slashes 1`] = `
+Map {
+  "/tmp/dendron/tags/body-only.md" => "---
+tags: []
+---
+#body/one
+#body/one/two
+",
+  "/tmp/dendron/tags/fm-and-body.md" => "---
+tags:
+  - fm/one
+---
+#body/one
+",
+  "/tmp/dendron/tags/fm-only.md" => "---
+tags:
+  - fm/one
+---
+
+",
+}
+`;
