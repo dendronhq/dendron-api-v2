@@ -87,6 +87,8 @@ types:
       src: string
       dest: string
       exclude: string
+      extraMetadata:
+        type: optional<map<string,unknown>>
 
   MergeVaultsResponse:
     properties:

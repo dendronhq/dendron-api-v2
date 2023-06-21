@@ -25,9 +25,7 @@ export class VaultsMergeService {
     }
     logger.info({ ctx, msg: "enter", opts });
 
-    // TODO: dont hardcode
-    const extraMetadataOnTarget = {
-      original_vault: "dendron-docs",
+    const extraMetadataOnTarget = opts.extraMetadata ?? {
     };
     const resp = await this.mergeFiles({ srcDir: src, destDir: dest, dryRun: false, extraMetadataOnTarget })
     return ok({
