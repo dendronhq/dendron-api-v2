@@ -71,7 +71,6 @@ export class VaultsIndexService {
         await pclient.note.upsert({ create: tableData, update: tableData, where: { id } })
       } catch (e) {
         logger.error({ ctx, msg: "error", e, note: { fname, data } })
-        throw e;
       }
     }
 
