@@ -5,7 +5,7 @@
     "watch": "tsc --watch",
     "build": "tsc",
     "build:api": "fern generate",
-    "start": "node lib/server.js",
+    "start": "env PORT=8085 node ./lib/src/server.js",
     "dev": "nodemon src/server.ts",
     "proto": "ts-node-esm --log-error src/proto.ts",
     "format": "prettier --write src/**",
